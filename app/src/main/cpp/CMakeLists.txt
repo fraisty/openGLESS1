@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.4.1)
 include_directories(
         example
         common
+        myegl
 )
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -14,7 +15,8 @@ include_directories(
 file(GLOB example-src
         ${CMAKE_SOURCE_DIR}/*.cpp
         ${CMAKE_SOURCE_DIR}/example/*.cpp
-        ${CMAKE_SOURCE_DIR}/common/*.cpp)
+        ${CMAKE_SOURCE_DIR}/common/*.cpp
+        ${CMAKE_SOURCE_DIR}/myegl/*.cpp )
 
 add_library( # Sets the name of the library.需要和java中调用的lib名一致
              nativelib-render
@@ -38,6 +40,8 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
+find_library( egl-lib EGL )
+
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
@@ -48,4 +52,5 @@ target_link_libraries( # Specifies the target library.整合所有的lib
                        # Links the target library to the log library
                        # included in the NDK.
                        GLESv3
+                       ${egl-lib}
                        ${log-lib} )
