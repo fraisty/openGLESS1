@@ -16,10 +16,12 @@ android {
         externalNativeBuild{
             cmake{
                 cppFlags ""   //指定c++版本
+                arguments "-DANDROID_STL=c++_static"
+                arguments "-DANDROID_ARM_NEON=ON"
             }
-//            ndk{
-//                ldLibs "log"//实现__android_log_print
-//            }
+            ndk{
+                ldLibs "log"//实现__android_log_print
+            }
         }
     }
 
@@ -30,6 +32,10 @@ android {
     }
 
     buildTypes {
+        debug {  //解决pthread.h等NDK找不到头文件问题
+            jniDebuggable true
+            jniDebuggable = true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -42,7 +48,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 

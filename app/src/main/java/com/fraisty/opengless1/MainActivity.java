@@ -19,9 +19,7 @@ public class MainActivity extends AppCompatActivity {
         //TextView mytextView = (TextView)findViewById(R.id.textview1);
         //String str = esNativeRender.NativeJniTest("Java!");
         //mytextView.setText(str);
-
         mySurfaceView =  findViewById(R.id.mysurfaceview);
-
     }
 }
 

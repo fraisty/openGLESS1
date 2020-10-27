@@ -20,23 +20,27 @@ void Triangle::Init() {
     //顶点着色器
     char vShaderStr[] =
             //声明使用的着色器版本3.0
-            "#version 300 es \n"
+            "#version 300 es\n"
             //声明一个输入属性4分量向量数组，layout(location = 0)表明变量的位置是顶点属性0
             "layout(location = 0) in vec4 vPosition; \n"
+            "layout(location = 1) in vec4 vColor;\n"
+            "out vec4 fColor;\n"
             "void main() \n"
             "{ \n"
             //每个顶点着色器必须在gl_Position变量中输出一个位置
             "   gl_Position = vPosition;    \n"
+            "   fColor = vColor;\n"
             "} \n";
     //片段着色器
     char fShaderStr[] =
-            "#verison 300 es    \n"
-
+            "#version 300 es    \n"
             "precision mediump float;   \n"
+            "in vec4 fColor; \n"
             "out vec4 fragColor;    \n"
             "void main()    \n"
             "{  \n"
-            "   fragColor = vec4 ( 1.0, 0.0, 0.0, 1.0 );    \n"
+//            "   fragColor = vec4 ( 0.0, 1.0, 1.0, 1.0 );    \n"
+                "fragColor = fColor;"
             "}  \n";
 
     mprogramObject = glHelper::CreateProgram(vShaderStr, fShaderStr);
@@ -49,6 +53,9 @@ void Triangle::Draw( int screenWidth, int screenHeight ) {
             0.0f,   0.5f,   0.0f,
             -0.5f,  -0.5f,  0.0f,
             0.5f,   -0.5f,  0.0f
+    };
+    GLfloat inColor[] = {
+            0.0f, 1.0f, 0.0f, 1.0f
     };
 
     //设置视口，opengles用于绘制的2d渲染表面的原点、宽度、高度
@@ -65,7 +72,8 @@ void Triangle::Draw( int screenWidth, int screenHeight ) {
     //加载几何形状
     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
     glEnableVertexAttribArray( 0 );
-
+    //加载输入变量
+    glVertexAttrib4fv(1, inColor);
     //通知绘制图元
     glDrawArrays( GL_TRIANGLES, 0 ,3 );
 }
@@ -77,3 +85,6 @@ void Triangle::Destroy() {
         mprogramObject = GL_NONE;
     }
 }
+
+
+

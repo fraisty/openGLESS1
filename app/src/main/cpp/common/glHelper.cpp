@@ -45,7 +45,7 @@ GLuint glHelper::LoadShader(GLenum type, const char *shaderSrc) {
             LOGFE("glHelper LoadShader compile shader error: \n%s\n", infoLog);
             if ( infoLog ) {free( infoLog );}
         }
-        LOGFE("glHelper LoadShader error, type is: %d \n", type);
+        LOGFE("glHelper LoadShader error, type is: %x \n", type);
         glDeleteShader( shader );
         return  0;
     }

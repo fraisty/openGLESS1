@@ -4,9 +4,15 @@
 #include <string>
 #include "jni.h"  //必须包含
 #include "common/myLog.h"
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+#include "glRender.h"
+#include "glThread.h"
 
 #define NATIVE_JNIIMPL_CLASSNAME "com/fraisty/opengless1/esNativeRender"
 
+glThread *glthread = nullptr;
+glRender *render = nullptr;
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,8 +31,24 @@ JNIEXPORT jstring JNICALL esJniTest(JNIEnv *env, jobject instance, jstring strt)
     return env->NewStringUTF(strc.c_str());
 }
 
+JNIEXPORT void JNICALL onSurfaceCreate(JNIEnv *env, jobject instance, jobject surface){
+    ANativeWindow* nativeWindow = ANativeWindow_fromSurface(env, surface);
+    glthread = new glThread();
+    render = new glRender();
+    glthread->setglRender(render);
+    glthread->onSurfaceCreate(nativeWindow);
+}
 
+JNIEXPORT void JNICALL onSurfaceChange(JNIEnv *env, jobject instance, jint w, jint h){
+    glthread->onSurfaceChange(w, h);
+}
 
+JNIEXPORT void JNICALL onSurfaceDestory(JNIEnv *env, jobject instance){
+    glthread->onSurfaceDestroy();
+    glthread->release();
+    glthread = nullptr;
+    if (render) delete render;
+}
 
 #ifdef __cplusplus
 }
@@ -34,7 +56,10 @@ JNIEXPORT jstring JNICALL esJniTest(JNIEnv *env, jobject instance, jstring strt)
 
 //接口输出函数表  “...;”不能丢，否则注册失败
 static JNINativeMethod esNativeMethods[] = {
-        {"NativeJniTest",  "(Ljava/lang/String;)Ljava/lang/String;", (void *)(esJniTest) }
+        //{"NativeJniTest",  "(Ljava/lang/String;)Ljava/lang/String;", (void *)(esJniTest) },
+        {"onCreate","(Landroid/view/Surface;)V",(void *)(onSurfaceCreate) },
+        {"onChange","(II)V",(void *)(onSurfaceChange) },
+        {"onDestory","()V",(void *)(onSurfaceDestory) },
 };
 
 
