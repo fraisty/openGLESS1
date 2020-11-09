@@ -25,10 +25,8 @@ GLuint glHelper::LoadShader(GLenum type, const char *shaderSrc) {
         LOGFE("glCreateShader is null!");
         return 0;
     }
-
     //将着色器源代码加载到着色器对象
     glShaderSource(shader, 1, &shaderSrc, NULL);
-
     //编译
     glCompileShader(shader);
 

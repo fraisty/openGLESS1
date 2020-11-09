@@ -5,9 +5,9 @@
 #ifndef OPENGLESS1_TRIANGLE_H
 #define OPENGLESS1_TRIANGLE_H
 
-#include "../common/glHelper.h"
+#include "NativeEpBase.h"
 
-class Triangle {
+class Triangle : public NativeEpBase {
 
 public:
     Triangle();
@@ -19,9 +19,6 @@ public:
     void Destroy();
 
     virtual ~Triangle();
-
-private:
-    GLuint mprogramObject;
 };
 
 

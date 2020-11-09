@@ -5,6 +5,9 @@
 #include "glRender.h"
 #include "myLog.h"
 
+
+
+
 glRender::glRender() {
     meglImpl = new eglImpl(NULL);
     mWindowSurface = EGL_NO_SURFACE;
@@ -21,13 +24,13 @@ void glRender::surfaceCreated(ANativeWindow *window) {
 
     mWindowSurface = meglImpl->createWindowSurface(window);
     meglImpl->makeCurrent(mWindowSurface);
-    mTriangle = new Triangle();
-    mTriangle->Init();
+    mexample = new Triangle();
+    mexample->Init();
 }
 
 void glRender::surfaceChanged(int width, int height) {
     meglImpl->makeCurrent(mWindowSurface);
-    mTriangle->Draw(width, height);
+    mexample->Draw(width, height);
     meglImpl->swapBuffers(mWindowSurface);
 }
 
@@ -38,10 +41,10 @@ void glRender::surfaceChanged(int width, int height) {
 //}
 
 void glRender::surfaceDestroyed(void) {
-    if (mTriangle){
-        mTriangle->Destroy();
-        delete mTriangle;
-        mTriangle = nullptr;
+    if (mexample){
+        mexample->Destroy();
+        delete mexample;
+        mexample = nullptr;
     }
     if (mWindowSurface){
         mWindowSurface = EGL_NO_SURFACE;

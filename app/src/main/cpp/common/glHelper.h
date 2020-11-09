@@ -13,11 +13,6 @@ private:
 
 public:
     static GLuint CreateProgram(const char *, const char *);
-
-
-
-
-
 };
 
 

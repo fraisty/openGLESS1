@@ -7,9 +7,9 @@
 
 #include <android/native_window.h>
 #include "../myegl/eglImpl.h"
-#include "../example/Triangle.h"
+#include "../example/NativeEpBase.h"
+#include "Triangle.h"
 
-//#include <EGL/egl.h>
 
 class glRender {
 
@@ -26,7 +26,7 @@ public:
 private:
     eglImpl *meglImpl;
     EGLSurface mWindowSurface;
-    Triangle *mTriangle;
+    NativeEpBase *mexample;
 };
 
 
