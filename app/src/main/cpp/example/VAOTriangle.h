@@ -11,7 +11,7 @@
 class VAOTriangle : public NativeEpBase {
 
 public:
-    VAOTriangle();
+    VAOTriangle() = default;
 
     void Init();
 
@@ -19,8 +19,11 @@ public:
 
     void Destroy();
 
-    virtual ~VAOTriangle();
+    virtual ~VAOTriangle()= default;
 
+private:
+    GLuint mVboids = 0;
+    GLuint mVaoid = 0;
 };
 
 

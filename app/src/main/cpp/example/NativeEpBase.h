@@ -9,7 +9,14 @@
 //#include "Triangle.h"
 #include "../common/myLog.h"
 
+enum NATIVE_EXAMPLE {
+    ENUM_EXAMPLE_TRIANGLE,
+    ENUM_EXAMPLE_VAOTRIANGLE,
+    ENUM_EXAMPLE_CUBE,
+    ENUM_EXAMPLE_CUBEBYINSTANCE,
 
+    ENUM_EXAMPLE_NUM
+};
 
 class NativeEpBase {
 public:

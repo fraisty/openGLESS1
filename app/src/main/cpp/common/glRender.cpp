@@ -6,7 +6,7 @@
 #include "myLog.h"
 
 
-
+enum NATIVE_EXAMPLE NOW_EXAMPLE = ENUM_EXAMPLE_CUBE;
 
 glRender::glRender() {
     meglImpl = new eglImpl(NULL);
@@ -21,10 +21,23 @@ glRender::~glRender() {
 }
 
 void glRender::surfaceCreated(ANativeWindow *window) {
-
     mWindowSurface = meglImpl->createWindowSurface(window);
     meglImpl->makeCurrent(mWindowSurface);
-    mexample = new Triangle();
+    switch ( NOW_EXAMPLE ) {
+        case ENUM_EXAMPLE_VAOTRIANGLE:
+            mexample = new VAOTriangle();
+            break;
+        case ENUM_EXAMPLE_CUBE: {
+            int width = ANativeWindow_getWidth(window);
+            int high = ANativeWindow_getHeight(window);
+            mexample = new Cube(width, high);
+        }
+            break;
+        case ENUM_EXAMPLE_CUBEBYINSTANCE:
+        default:
+            mexample = new Triangle();
+            break;
+    }
     mexample->Init();
 }
 

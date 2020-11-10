@@ -9,6 +9,8 @@
 #include "../myegl/eglImpl.h"
 #include "../example/NativeEpBase.h"
 #include "Triangle.h"
+#include "VAOTriangle.h"
+#include "Cube.h"
 
 
 class glRender {

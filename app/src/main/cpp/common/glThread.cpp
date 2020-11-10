@@ -6,6 +6,7 @@
 #include "myLog.h"
 #include <unistd.h>
 
+
 glThread::glThread():isChange(false), isCreate(false), isExit(false)
                     , isStart(false), window(nullptr) {
 
@@ -48,7 +49,7 @@ void* glthreadloop(void* context){
         }
         //OnDraw
         if (glThread->isStart){
-            LOGFD("glThread OnDraw:width is %d,height is %d",glThread->width,glThread->height);
+            //LOGFD("glThread OnDraw:width is %d,height is %d",glThread->width,glThread->height);
             if (glThread->mRender){
                 glThread->mRender->surfaceChanged(glThread->width,glThread->height);
             }
