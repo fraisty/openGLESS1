@@ -101,7 +101,7 @@ void Cube::Init() {
     glBindVertexArray(GL_NONE);
 
     //生成一个默认的透视矩阵
-    glHelper::SetIdentityMatrix(&mPerspective);
+    //glHelper::SetIdentityMatrix(&mPerspective);
     glHelper::Perspective(&mPerspective, 90.0f, mAspect,1.0f ,30.0f);
     //生成一个默认的变换矩阵
     glHelper::SetIdentityMatrix(&mModelView);

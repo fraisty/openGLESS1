@@ -16,6 +16,7 @@ typedef struct __MATRIX GLMatrix;
 
 
 
+
 class glHelper {
 private:
     static GLuint LoadShader(GLenum type, const char *shaderSrc);
@@ -33,6 +34,7 @@ public:
             float top, float nearZ, float farZ );
     static void   Translate( GLMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz );
     static void   Rotate( GLMatrix *result, GLfloat angle, GLfloat x, GLfloat y, GLfloat z );
+    static GLMatrix Perspective( float fovy, float  aspect, float nearZ, float farZ);
 };
 
 

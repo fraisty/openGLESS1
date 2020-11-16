@@ -230,7 +230,10 @@ void glHelper::MultiplyMatrix(GLMatrix *res, GLMatrix *sA, GLMatrix *sB) {
     memcpy(res, &tmp, sizeof(GLMatrix));
 }
 
-
+/* @Description: es透视矩阵
+ * @param
+ * @return
+*/
 void glHelper::Frustum(GLMatrix *result, float left, float right, float bottom,
         float top, float nearZ, float farZ) {
 
@@ -263,7 +266,7 @@ void glHelper::Frustum(GLMatrix *result, float left, float right, float bottom,
     MultiplyMatrix ( result, &frust, result );
 }
 
-/* @Description:  透视矩阵
+/* @Description:  es透视矩阵
  * @param
  * @return
 */
@@ -285,4 +288,20 @@ void glHelper::Translate(GLMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
     result->m[3][2] += ( result->m[0][2] * tx + result->m[1][2] * ty + result->m[2][2] * tz );
     result->m[3][3] += ( result->m[0][3] * tx + result->m[1][3] * ty + result->m[2][3] * tz );
 }
+
+GLMatrix glHelper::Perspective(float fovy, float aspect, float nearZ, float farZ) {
+
+    GLMatrix result;
+    memset(&result, 0x0, sizeof(GLMatrix));
+
+    float const tanFovy = tan(fovy / static_cast<float>(2));
+
+    result.m[0][0] = static_cast<float>(1) / (aspect * tanFovy);
+    result.m[1][1] = static_cast<float>(1) / (tanFovy);
+    result.m[2][2] = - (farZ + nearZ) / (farZ - nearZ);
+    result.m[2][3] = - static_cast<float>(1);
+    result.m[3][2] = - (static_cast<float>(2) * farZ * nearZ) / (farZ - nearZ);
+    return result;
+}
+
 
