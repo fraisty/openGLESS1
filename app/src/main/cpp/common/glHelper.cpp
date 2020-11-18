@@ -305,3 +305,36 @@ GLMatrix glHelper::Perspective(float fovy, float aspect, float nearZ, float farZ
 }
 
 
+GLuint glHelper::CreateSimpleTexture2D() {
+    //纹理句柄
+    GLuint textureId;
+
+    // 2x2 Image，3 bytes per pixel (R, G, B)
+    GLubyte pixels[] =
+            {
+                    255,   0,   0, // Red
+                    255, 0 ,255 ,  // Purple
+                    0, 255,   0,   // Green
+                    0,   0, 255,   // Blue
+                    255,   0,   0, // Red
+                    255, 255,   0,  // Yellow
+                    255,   0,   0, // Red
+                    255, 0 ,255 ,  // Purple
+                    0, 255,   0,   // Green
+            };
+    //像素解包对齐，GL_UNPACK_ALIGNMENT指定各行对齐方式。设1为图像紧密打包
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    //创建纹理对象，此处为1个
+    glGenTextures(1, &textureId);
+    //绑定纹理对象
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    //加载纹理
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 3, 3, 0,
+            GL_RGB, GL_UNSIGNED_BYTE, pixels);
+    //设置过滤模式
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    return textureId;
+}
+

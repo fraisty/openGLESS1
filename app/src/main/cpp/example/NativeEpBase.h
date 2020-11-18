@@ -14,24 +14,32 @@ enum NATIVE_EXAMPLE {
     ENUM_EXAMPLE_VAOTRIANGLE,
     ENUM_EXAMPLE_CUBE,
     ENUM_EXAMPLE_CUBEBYINSTANCE,
+    ENUM_EXAMPLE_SIMPLETEXTURE,
+    ENUM_EXAMPLE_MIPMAP2D,
+    ENUM_EXAMPLE_SIMPLEMAPTEXTURE,
 
     ENUM_EXAMPLE_NUM
 };
 
 class NativeEpBase {
 public:
-    NativeEpBase():mprogramObject(GL_NONE){}
+    NativeEpBase():mprogramObject(GL_NONE),mTextureId(GL_NONE){}
 
     virtual void Init() = 0;
 
     virtual void Draw(int screenW, int screenH) = 0;
 
-    virtual void Destroy() = 0;
+    virtual void Destroy() {
+        if ( mprogramObject ){
+            glDeleteProgram( mprogramObject );
+            mprogramObject = GL_NONE;
+        }};
 
     virtual ~NativeEpBase() {  }
 
 protected:
     GLuint mprogramObject;
+    GLuint mTextureId;
 };
 
 

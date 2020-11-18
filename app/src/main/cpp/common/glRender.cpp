@@ -6,7 +6,7 @@
 #include "myLog.h"
 
 
-enum NATIVE_EXAMPLE NOW_EXAMPLE = ENUM_EXAMPLE_CUBE;
+enum NATIVE_EXAMPLE NOW_EXAMPLE = ENUM_EXAMPLE_SIMPLEMAPTEXTURE;
 
 glRender::glRender() {
     meglImpl = new eglImpl(NULL);
@@ -32,6 +32,12 @@ void glRender::surfaceCreated(ANativeWindow *window) {
             int high = ANativeWindow_getHeight(window);
             mexample = new Cube(width, high);
         }
+            break;
+        case ENUM_EXAMPLE_SIMPLETEXTURE:
+            mexample = new SimpleTexture();
+            break;
+        case ENUM_EXAMPLE_SIMPLEMAPTEXTURE:
+            mexample = new SimpleMapTexture();
             break;
         case ENUM_EXAMPLE_CUBEBYINSTANCE:
         default:

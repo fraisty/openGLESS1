@@ -23,6 +23,8 @@ private:
 
 public:
     static GLuint CreateProgram(const char *, const char *);
+
+    /*********** Matrix  **********/
     static void   SetIdentityMatrix( GLMatrix *mat );
     static void   SampleScaling(GLMatrix *mat, GLfloat factor);
     static void   SampleRotaeByX(GLMatrix *mat, GLfloat angle );
@@ -35,6 +37,10 @@ public:
     static void   Translate( GLMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz );
     static void   Rotate( GLMatrix *result, GLfloat angle, GLfloat x, GLfloat y, GLfloat z );
     static GLMatrix Perspective( float fovy, float  aspect, float nearZ, float farZ);
+
+    /*******   texture    *********/
+    static GLuint  CreateSimpleTexture2D();
+
 };
 
 

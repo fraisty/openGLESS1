@@ -11,6 +11,8 @@
 #include "Triangle.h"
 #include "VAOTriangle.h"
 #include "Cube.h"
+#include "SimpleTexture.h"
+#include "SimpleMapTexture.h"
 
 
 class glRender {
