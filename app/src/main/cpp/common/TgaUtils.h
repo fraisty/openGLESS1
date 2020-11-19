@@ -10,18 +10,18 @@
 
 using namespace std;
 
-struct TGAImageData{
-    uint16_t width;
-    uint16_t height;
-    //uint16_t     rgbType;
-    uint16_t     bytePerPixel;
-    uint8_t *data;
-};
 
 class TgaUtils {
 public:
 #pragma pack(push)   //阻止对齐
 #pragma pack(1)
+    struct TGAImageData{
+        uint16_t width;
+        uint16_t height;
+        //uint16_t     rgbType;
+        uint16_t     bytePerPixel;
+        uint8_t *data;
+    };
     struct TGAHeader{
         uint8_t idLength;           //图像信息字段长度      1byte
         uint8_t colorMapType;       //颜色表类型           1byte
@@ -51,13 +51,16 @@ public:
     void TgaHeaderDump();
     void CheckHeader();
     void getTextureId( GLuint& tId );
+    void dumpImageData(string,int32_t);
 private:
     bool readTgaFile(string filename);
     bool readTgaImageData(FILE *fd);
+    void transImageData2vertic();
     TGAHeader *mImageHeader;
     TGAImageData mImageData;
     TGAImageInfo mImageInfo;
     bool mreadCheck;
+    string appdatapath;
 };
 
 

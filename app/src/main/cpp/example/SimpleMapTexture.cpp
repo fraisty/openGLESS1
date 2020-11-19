@@ -57,6 +57,14 @@ void SimpleMapTexture::Draw(int screenW, int screenH) {
             0.5f,  -0.5f,  0.0f,  1.0f,  1.0f,  //右下角
             0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //右上角
     };
+
+//    GLfloat vVertices[] = {  //翻转180度
+//            -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //左上角
+//            -0.5f,  -0.5f,  0.0f,  0.0f,  0.0f,  //左下角
+//            0.5f,  -0.5f,  0.0f,  1.0f,  0.0f,  //右下角
+//            0.5f,  0.5f,  0.0f,  1.0f,  1.0f, //右上角
+//    };
+
     GLushort indices[] = {
             0,  1,  2,
             0,  2,  3,

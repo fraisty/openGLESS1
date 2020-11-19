@@ -5,7 +5,8 @@
 #include "TgaUtils.h"
 #include "myLog.h"
 
-TgaUtils::TgaUtils(): mImageHeader(nullptr), mreadCheck(false){
+TgaUtils::TgaUtils(): mImageHeader(nullptr), mreadCheck(false),
+        appdatapath("/data/data/com.fraisty.opengless1/"){
 }
 
 TgaUtils::TgaUtils(string filename) : TgaUtils() {
@@ -36,10 +37,10 @@ bool TgaUtils::readTgaFile(string filename) {
 }
 
 bool TgaUtils::readTgaImageData(FILE *fd) {
-    uint32_t imageSize = 0;
+    int32_t imageSize = 0;
     //先只支持读取数据，忽略颜色表数据以及图像信息字段
     if ( mImageHeader->idLength || mImageHeader->colorMapType ){
-        LOGFE("imageinfo || colormap is not null");
+        LOGFE("imageinfo || colormap is not supported");
         return false;
     }
     //ready
@@ -48,9 +49,12 @@ bool TgaUtils::readTgaImageData(FILE *fd) {
     mImageData.bytePerPixel = mImageHeader->pixelDepth / 8;
     imageSize = mImageData.bytePerPixel
                 * mImageData.width * mImageData.height;
-    LOGFD("\nmImageData: width is %d;\n heigth is %d;\n"
-                    "imageSize is %d; bpp is %d.", mImageData.width,
-                    mImageData.height ,imageSize,mImageData.bytePerPixel);
+    int32_t imageSizeDQ = (((mImageData.width*mImageHeader->pixelDepth) + 31)>>5)<<2;
+    LOGFE("\nmImageData: width is %d;\n heigth is %d;\n"
+                    "imageSize is %d;\n bpp is %d;\n DQ is %d.", mImageData.width,
+                    mImageData.height ,imageSize,mImageData.bytePerPixel,
+                    imageSizeDQ == mImageData.width * mImageData.bytePerPixel ? 1:0 );
+
     //分配空间
     mImageData.data = (uint8_t*)malloc( imageSize );
     if (mImageData.data == nullptr){
@@ -58,21 +62,30 @@ bool TgaUtils::readTgaImageData(FILE *fd) {
         return false;
     }
     //跳转文件头
-    if ( fseek( fd, sizeof(TGAHeader), 0 ) == -1 ){
+    if ( fseek( fd, sizeof(TGAHeader), SEEK_SET ) == -1 ){
         free(mImageData.data);
         LOGFE("fseek failed!");
         return false;
     }
-    if ( fread(mImageData.data, 1, imageSize, fd) != imageSize){
-        LOGFE("fread failed! ImageSize is %d.",imageSize);
+
+    if ( fread(mImageData.data, 1, imageSize, fd) != imageSize ){
+        LOGFE("fread failed! bit5 is 1, ImageSize is %d.",imageSize);
         free(mImageData.data);
         return false;
     }
+
+    //tga  imagefd bit5-0 屏幕起始位置标志，0-原点在左下角，读取从下到上，1-原点在左上角，读取从上到下
+    //1 正常，当为0时读取后翻转
+    if ( !(mImageHeader->imagefd & 0x20) ){
+         transImageData2vertic();
+    }
+
     //tga is BGR(A), need turn to RGB(A)
     for( int i = 0; i < static_cast<int>(imageSize); i+=
             static_cast<int>(mImageData.bytePerPixel) ){
         std::swap<uint8_t>(mImageData.data[i],mImageData.data[i+2]);
     }
+
     return true;
 }
 
@@ -86,6 +99,16 @@ TgaUtils::~TgaUtils() {
 
 uint8_t* TgaUtils::getImageData() {
     return mImageData.data; //？
+}
+
+void TgaUtils::dumpImageData(string fn, int32_t isize) {
+    FILE *fd = fopen( (appdatapath + fn).c_str(), "wb+" );
+    if( !fd ){
+        LOGFE("File open to write failed.");
+        return;
+    }
+    fwrite( mImageData.data, isize, 1, fd);
+    fclose(fd);
 }
 
 void TgaUtils::getTextureId(GLuint& tId) {
@@ -117,6 +140,20 @@ void TgaUtils::TgaHeaderDump() {
 
 void TgaUtils::CheckHeader() {
 
+}
+
+void TgaUtils::transImageData2vertic() {
+    uint32_t imagePerLineBytes = mImageData.width * mImageData.bytePerPixel;
+    uint8_t*  temp_line = new uint8_t[imagePerLineBytes];
+    uint16_t height_half = mImageData.height >> 1;
+    for (uint16_t i = 0; i < height_half ;i++ ){
+        unsigned long l1 = i*imagePerLineBytes;
+        unsigned long l2 = (mImageData.height-1-i)*imagePerLineBytes;
+        memmove((void *)temp_line,      (void *)(mImageData.data+l1), imagePerLineBytes);
+        memmove((void *)(mImageData.data+l1), (void *)(mImageData.data+l2), imagePerLineBytes);
+        memmove((void *)(mImageData.data+l2), (void *)temp_line,      imagePerLineBytes);
+    }
+    delete [] temp_line;
 }
 
 
