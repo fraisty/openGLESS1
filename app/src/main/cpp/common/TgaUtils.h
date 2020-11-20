@@ -5,36 +5,27 @@
 #ifndef OPENGLESS1_TGAUTILS_H
 #define OPENGLESS1_TGAUTILS_H
 
-#include <string>
-#include "GLES3/gl3.h"
-
-using namespace std;
 
 
-class TgaUtils {
+#include "ImageUtil.h"
+
+class TgaUtils : public ImageUtil {
 public:
 #pragma pack(push)   //阻止对齐
 #pragma pack(1)
-    struct TGAImageData{
-        uint16_t width;
-        uint16_t height;
-        //uint16_t     rgbType;
-        uint16_t     bytePerPixel;
-        uint8_t *data;
-    };
     struct TGAHeader{
-        uint8_t idLength;           //图像信息字段长度      1byte
-        uint8_t colorMapType;       //颜色表类型           1byte
-        uint8_t imageType;          //图像类型             1byte
-        uint16_t colorMapFirstAddr; //颜色表首地址          2byte
-        uint16_t colorMapLen;       //颜色表长度            2byte
-        uint8_t colorMapPMSize;     //颜色表表项大小        1byte
-        uint16_t imageXOrigin;      //图像左下角的水平坐标   2byte
-        uint16_t imageYOrigin;      //图像左下角的垂直坐标   2byte
-        uint16_t igwidth;            //图像宽度             2byte
-        uint16_t igheight;           //图像高度             2byte
-        uint8_t pixelDepth;          //像素深度             1byte
-        uint8_t imagefd;             //图像描述符            1byte
+        uint8_t idLength = 0;           //图像信息字段长度      1byte
+        uint8_t colorMapType = 0;       //颜色表类型           1byte
+        uint8_t imageType = 0;          //图像类型             1byte
+        uint16_t colorMapFirstAddr = 0; //颜色表首地址          2byte
+        uint16_t colorMapLen = 0;       //颜色表长度            2byte
+        uint8_t colorMapPMSize = 0;     //颜色表表项大小        1byte
+        uint16_t imageXOrigin= 0;      //图像左下角的水平坐标   2byte
+        uint16_t imageYOrigin= 0;      //图像左下角的垂直坐标   2byte
+        uint16_t igwidth= 0;            //图像宽度             2byte
+        uint16_t igheight= 0;           //图像高度             2byte
+        uint8_t pixelDepth= 0;          //像素深度             1byte
+        uint8_t imagefd= 0;             //图像描述符            1byte
     };
     struct TGAImageInfo{
         uint8_t *imageInfo;           //图像信息字段
@@ -45,22 +36,21 @@ public:
 #pragma pack(pop)
 
     TgaUtils();
-    TgaUtils(string filename);
+    TgaUtils(std::string filename);
     uint8_t* getImageData();
     ~TgaUtils();
     void TgaHeaderDump();
     void CheckHeader();
-    void getTextureId( GLuint& tId );
-    void dumpImageData(string,int32_t);
+
+    void dumpImageData(std::string,int32_t);
+
 private:
-    bool readTgaFile(string filename);
+    bool readTgaFile(std::string filename);
     bool readTgaImageData(FILE *fd);
     void transImageData2vertic();
-    TGAHeader *mImageHeader;
-    TGAImageData mImageData;
+    std::unique_ptr<TGAHeader> mImageHeader;
     TGAImageInfo mImageInfo;
     bool mreadCheck;
-    string appdatapath;
 };
 
 

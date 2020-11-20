@@ -45,6 +45,7 @@ EGLBoolean eglImpl::Initialize(EGLContext sharedContext) {
     //确定可用表面配置
     {
         EGLint numConfigs = 0;
+
         EGLint configAttribs[] = {
                 EGL_RED_SIZE,       8,
                 EGL_GREEN_SIZE,     8,

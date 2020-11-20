@@ -3,25 +3,24 @@
 //
 
 #include "TgaUtils.h"
-#include "myLog.h"
 
-TgaUtils::TgaUtils(): mImageHeader(nullptr), mreadCheck(false),
-        appdatapath("/data/data/com.fraisty.opengless1/"){
+
+TgaUtils::TgaUtils():mImageHeader(std::make_unique<TGAHeader>()), mreadCheck(false)
+{
 }
 
-TgaUtils::TgaUtils(string filename) : TgaUtils() {
-    mImageHeader = new TGAHeader;
-    mreadCheck = readTgaFile(filename);
+TgaUtils::TgaUtils(std::string filename) : TgaUtils() {
+    mreadCheck = readTgaFile(mAppdatapath + filename);
 }
 
-bool TgaUtils::readTgaFile(string filename) {
+bool TgaUtils::readTgaFile(std::string filename) {
     FILE *fd = fopen(filename.c_str(),"rb");
     if( !fd ){
         LOGFE("File open failed.");
         return false;
     }
     //读取文件头
-    if (fread(mImageHeader, sizeof(TGAHeader), 1, fd) != 1){
+    if (fread(mImageHeader.get(), sizeof(TGAHeader), 1, fd) != 1){
         LOGFE("File read failed.");
     }
     TgaHeaderDump();
@@ -50,8 +49,10 @@ bool TgaUtils::readTgaImageData(FILE *fd) {
     imageSize = mImageData.bytePerPixel
                 * mImageData.width * mImageData.height;
     int32_t imageSizeDQ = (((mImageData.width*mImageHeader->pixelDepth) + 31)>>5)<<2;
+
     LOGFE("\nmImageData: width is %d;\n heigth is %d;\n"
                     "imageSize is %d;\n bpp is %d;\n DQ is %d.", mImageData.width,
+
                     mImageData.height ,imageSize,mImageData.bytePerPixel,
                     imageSizeDQ == mImageData.width * mImageData.bytePerPixel ? 1:0 );
 
@@ -81,28 +82,29 @@ bool TgaUtils::readTgaImageData(FILE *fd) {
     }
 
     //tga is BGR(A), need turn to RGB(A)
-    for( int i = 0; i < static_cast<int>(imageSize); i+=
+    for( auto i = 0; i < static_cast<int>(imageSize); i+=
             static_cast<int>(mImageData.bytePerPixel) ){
         std::swap<uint8_t>(mImageData.data[i],mImageData.data[i+2]);
     }
-
+    if (mImageData.bytePerPixel == 3){
+        mImageData.rgbType.internalFormat = GL_RGB8;
+        mImageData.rgbType.format = GL_RGB;
+    }
     return true;
 }
 
 TgaUtils::~TgaUtils() {
-    delete mImageHeader;
     if( !mImageData.data ){
         free(mImageData.data);
     }
 }
 
-
 uint8_t* TgaUtils::getImageData() {
     return mImageData.data; //？
 }
 
-void TgaUtils::dumpImageData(string fn, int32_t isize) {
-    FILE *fd = fopen( (appdatapath + fn).c_str(), "wb+" );
+void TgaUtils::dumpImageData(std::string fn, int32_t isize) {
+    FILE *fd = fopen( (mAppdatapath + fn).c_str(), "wb+" );
     if( !fd ){
         LOGFE("File open to write failed.");
         return;
@@ -111,19 +113,9 @@ void TgaUtils::dumpImageData(string fn, int32_t isize) {
     fclose(fd);
 }
 
-void TgaUtils::getTextureId(GLuint& tId) {
-    GLuint type = GL_RGB;
-    if ( mImageData.bytePerPixel == 4 ) type = GL_RGBA;
-    glGenTextures(1, &tId);
-    glBindTexture(GL_TEXTURE_2D, tId);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// Linear Filtered
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	// Linear Filtered
-    glTexImage2D(GL_TEXTURE_2D, 0, type, mImageData.width,
-            mImageData.height, 0, type, GL_UNSIGNED_BYTE, mImageData.data);
-}
 
 void TgaUtils::TgaHeaderDump() {
-    LOGFE("TGAHeader size is : %d",sizeof(*mImageHeader));
+    LOGFE("TGAHeader size is : %d", static_cast<int>(sizeof((*mImageHeader))));
     LOGFE("idLength : %d",mImageHeader->idLength);
     LOGFE("colorMapType : %d",mImageHeader->colorMapType);
     LOGFE("imageType : %d",mImageHeader->imageType);

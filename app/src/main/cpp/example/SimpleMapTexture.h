@@ -20,8 +20,9 @@ public:
     virtual void Destroy();
 
 private:
-    GLuint mTextureId;
+    GLuint mTextureId[2];
     GLint  mSamplerLoc;
+    GLfloat mR;
 };
 
 

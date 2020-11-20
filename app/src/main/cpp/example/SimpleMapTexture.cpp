@@ -3,9 +3,10 @@
 //
 
 #include "SimpleMapTexture.h"
+#include "ImageUtil.h"
 #include "TgaUtils.h"
 
-SimpleMapTexture::SimpleMapTexture() {
+SimpleMapTexture::SimpleMapTexture() :mR(0.8f){
 
 }
 
@@ -36,6 +37,10 @@ void SimpleMapTexture::Init() {
             "void main()    \n"
             "{  \n"
             "   outColor = texture( s_Texture, oTexCoord);   \n"
+            //检测被采样的纹理颜色的alpha值是否低于0.1的阈值，如果是的话，则丢弃这个片段。
+            //使用混合更好
+//            "   if(outColor.a < 0.1)   \n"
+//            "       discard;           \n"
             "}  \n";
 
     mprogramObject = glHelper::CreateProgram(vShaderStr, fShaderStr);
@@ -44,26 +49,25 @@ void SimpleMapTexture::Init() {
     //生成简单纹理2×2
     //mTextureId = glHelper::CreateSimpleTexture2D();
 
-    //TgaUtils mTga("/data/data/com.fraisty.opengless1/front.tga");
-    TgaUtils mTga("/data/data/com.fraisty.opengless1/mark3as_wp.tga");
-    mTga.getTextureId( mTextureId );
+    //mark3as_wp.tga  front.tga grass.tga
+    std::unique_ptr<ImageUtil> mTga = std::make_unique<TgaUtils>("grass.tga");
+    std::unique_ptr<ImageUtil> mTga2 = std::make_unique<TgaUtils>("mark3as_wp.tga");
+    //mTga->transRGBA82RGB10A2();
+    mTga->getTextureId(mTextureId[1]);
+    mTga2->getTextureId(mTextureId[0]);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void SimpleMapTexture::Draw(int screenW, int screenH) {
     //顶点 纹理  3+2
     GLfloat vVertices[] = {
-            -0.5f,  0.5f,  0.0f,  0.0f,  0.0f, //左上角
-            -0.5f,  -0.5f,  0.0f,  0.0f,  1.0f,  //左下角
-            0.5f,  -0.5f,  0.0f,  1.0f,  1.0f,  //右下角
-            0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //右上角
+            -mR,  mR,  0.0f,  0.0f,  0.0f, //左上角
+            -mR,  -mR,  0.0f,  0.0f,  1.0f,  //左下角
+            mR,  -mR,  0.0f,  1.0f,  1.0f,  //右下角
+            mR,  mR,  0.0f,  1.0f,  0.0f, //右上角
     };
-
-//    GLfloat vVertices[] = {  //翻转180度
-//            -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //左上角
-//            -0.5f,  -0.5f,  0.0f,  0.0f,  0.0f,  //左下角
-//            0.5f,  -0.5f,  0.0f,  1.0f,  0.0f,  //右下角
-//            0.5f,  0.5f,  0.0f,  1.0f,  1.0f, //右上角
-//    };
 
     GLushort indices[] = {
             0,  1,  2,
@@ -71,7 +75,7 @@ void SimpleMapTexture::Draw(int screenW, int screenH) {
     };
 
     glViewport( 0, 0, screenW, screenH);
-    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClearColor(0.8, 1.0, 1.0, 1.0);
     glClear( GL_COLOR_BUFFER_BIT );
     glUseProgram( mprogramObject );
 
@@ -82,14 +86,18 @@ void SimpleMapTexture::Draw(int screenW, int screenH) {
 
     //bind the texture
     glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, mTextureId );
+    glBindTexture( GL_TEXTURE_2D, mTextureId[0] );
     //设置纹理采样器读取0
     glUniform1i( mSamplerLoc, 0 );
+    glDrawElements( GL_TRIANGLES, sizeof(indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, indices );
 
+    glActiveTexture( GL_TEXTURE0 );
+    glBindTexture( GL_TEXTURE_2D, mTextureId[1] );
+    glUniform1i( mSamplerLoc, 0 );
     glDrawElements( GL_TRIANGLES, sizeof(indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, indices );
 }
 
 void SimpleMapTexture::Destroy() {
-    glDeleteTextures( 1, &mTextureId );
+    glDeleteTextures( 2, mTextureId );
     NativeEpBase::Destroy();
 }

@@ -5,7 +5,6 @@
 #include "glRender.h"
 #include "myLog.h"
 
-
 enum NATIVE_EXAMPLE NOW_EXAMPLE = ENUM_EXAMPLE_SIMPLEMAPTEXTURE;
 
 glRender::glRender() {
