@@ -23,6 +23,8 @@ public:
 private:
     GLuint mTextureId;
     GLint  mSamplerLoc;
+    GLuint mVaoid;
+    GLuint mVboids[2] = {0};
 };
 
 

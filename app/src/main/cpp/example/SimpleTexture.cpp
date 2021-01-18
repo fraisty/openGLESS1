@@ -43,38 +43,52 @@ void SimpleTexture::Init() {
     mTextureId = glHelper::CreateSimpleTexture2D();
     //获取纹理采样器的location
     mSamplerLoc = glGetUniformLocation( mprogramObject, "s_Texture");
-}
 
-void SimpleTexture::Draw(int screenW, int screenH) {
     //顶点 纹理  3+2
     GLfloat vVertices[] = {
             -0.5f,  0.5f,  0.0f,  0.0f,  0.0f, //左上角
             -0.5f,  -0.5f,  0.0f,  0.0f,  1.0f,  //左下角
-             0.5f,  -0.5f,  0.0f,  1.0f,  1.0f,  //右下角
-             0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //右上角
+            0.5f,  -0.5f,  0.0f,  1.0f,  1.0f,  //右下角
+            0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //右上角
     };
     GLushort indices[] = {
             0,  1,  2,
             0,  2,  3,
     };
 
+    glGenBuffers(2,mVboids);
+    glBindBuffer(GL_ARRAY_BUFFER, mVboids[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices),vVertices,GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVboids[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1,&mVaoid);
+    glBindVertexArray(mVaoid);
+    glBindBuffer(GL_ARRAY_BUFFER, mVboids[0]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVboids[1]);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (const void *)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat),
+                (const void *)(sizeof(GLfloat)*3));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(GL_NONE);
+}
+
+void SimpleTexture::Draw(int screenW, int screenH) {
+
     glViewport( 0, 0, screenW, screenH);
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear( GL_COLOR_BUFFER_BIT );
     glUseProgram( mprogramObject );
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), vVertices);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), &vVertices[3]);
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
 
     //bind the texture
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, mTextureId );
     //设置纹理采样器读取0
     glUniform1i( mSamplerLoc, 0 );
-
-    glDrawElements( GL_TRIANGLES, sizeof(indices)/sizeof(GLushort), GL_UNSIGNED_SHORT, indices );
+    glBindVertexArray(mVaoid);
+    glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (const void* )0 );
 }
 
 

@@ -124,7 +124,7 @@ void Cube::Draw(int screenW, int screenH) {
     glEnable(GL_DEPTH_TEST);
 
     glUseProgram( mprogramObject );
-
+    
     glBindVertexArray(mVaoId);
 
     glUniformMatrix4fv(mMvploc, 1, GL_FALSE, (GLfloat*)&mMvpMat.m[0][0]);
